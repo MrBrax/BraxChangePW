@@ -79,6 +79,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -95,6 +96,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="database.png" />
+    <None Include="database-16.png" />
+    <None Include="database_12.png" />
     <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

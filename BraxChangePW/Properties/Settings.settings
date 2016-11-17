@@ -16,5 +16,14 @@ Please change your password.</Value>
     <Setting Name="AuthToken" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="CountryCode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">+46</Value>
+    </Setting>
+    <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
