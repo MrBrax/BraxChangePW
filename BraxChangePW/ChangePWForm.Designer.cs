@@ -28,7 +28,7 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.cfgSave = new System.Windows.Forms.Button();
 			this.inputUsername = new System.Windows.Forms.TextBox();
-			this.label2 = new System.Windows.Forms.Label();
+			this.lblUsername = new System.Windows.Forms.Label();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.inputMessageTemplate = new System.Windows.Forms.TextBox();
@@ -73,6 +73,8 @@
 			this.btnChangeLogon = new System.Windows.Forms.Button();
 			this.btnChangePassword = new System.Windows.Forms.Button();
 			this.btnSetPhone = new System.Windows.Forms.Button();
+			this.statusUser = new System.Windows.Forms.ToolStripStatusLabel();
+			this.statusContext = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -132,20 +134,22 @@
 			this.inputUsername.TabIndex = 0;
 			this.inputUsername.TextChanged += new System.EventHandler(this.inputUsername_TextChanged);
 			// 
-			// label2
+			// lblUsername
 			// 
-			this.label2.Dock = System.Windows.Forms.DockStyle.Left;
-			this.label2.Location = new System.Drawing.Point(3, 3);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(65, 20);
-			this.label2.TabIndex = 3;
-			this.label2.Text = "Username";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.lblUsername.Dock = System.Windows.Forms.DockStyle.Left;
+			this.lblUsername.Location = new System.Drawing.Point(3, 3);
+			this.lblUsername.Name = "lblUsername";
+			this.lblUsername.Size = new System.Drawing.Size(65, 20);
+			this.lblUsername.TabIndex = 3;
+			this.lblUsername.Text = "Username";
+			this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusLabel});
+            this.statusLabel,
+            this.statusUser,
+            this.statusContext});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 419);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(624, 22);
@@ -550,7 +554,7 @@
 			// panel1
 			// 
 			this.panel1.Controls.Add(this.inputUsername);
-			this.panel1.Controls.Add(this.label2);
+			this.panel1.Controls.Add(this.lblUsername);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panel1.Location = new System.Drawing.Point(5, 21);
 			this.panel1.Name = "panel1";
@@ -661,6 +665,18 @@
 			this.btnSetPhone.UseVisualStyleBackColor = true;
 			this.btnSetPhone.Click += new System.EventHandler(this.btnSetPhone_Click);
 			// 
+			// statusUser
+			// 
+			this.statusUser.Name = "statusUser";
+			this.statusUser.Size = new System.Drawing.Size(51, 17);
+			this.statusUser.Text = "USR ERR";
+			// 
+			// statusContext
+			// 
+			this.statusContext.Name = "statusContext";
+			this.statusContext.Size = new System.Drawing.Size(56, 17);
+			this.statusContext.Text = "CON ERR";
+			// 
 			// ChangePWForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -713,7 +729,7 @@
 		private System.Windows.Forms.Button cfgSave;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox inputUsername;
-		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label lblUsername;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel;
 		private System.Windows.Forms.TextBox inputMessageTemplate;
@@ -758,6 +774,8 @@
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.Button btnChangeLogon;
 		private System.Windows.Forms.Button btnUnlockAccount;
+		private System.Windows.Forms.ToolStripStatusLabel statusUser;
+		private System.Windows.Forms.ToolStripStatusLabel statusContext;
 	}
 }
 
