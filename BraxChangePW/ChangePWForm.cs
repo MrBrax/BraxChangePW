@@ -171,6 +171,8 @@ namespace BraxChangePW {
 
 			updateMessage();
 
+			if (adUser != null) adUser.Dispose();
+
 			// don't spam the db
 			if (sUsername == String.Empty || sUsername.Length <= 3) {
 				statusLabel.Text = "No username, or it's too short.";
@@ -181,9 +183,7 @@ namespace BraxChangePW {
 
 			if (!adConnect()) return;
 
-			sPhone = string.Empty; // reset phone
-
-			if (adUser != null) adUser.Dispose();
+			sPhone = string.Empty; // reset phone			
 
 			// find user
 			adUser = UserPrincipal.FindByIdentity(adContext, IdentityType.SamAccountName, sUsername);

@@ -31,6 +31,8 @@
 			this.lblUsername = new System.Windows.Forms.Label();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.statusUser = new System.Windows.Forms.ToolStripStatusLabel();
+			this.statusContext = new System.Windows.Forms.ToolStripStatusLabel();
 			this.inputMessageTemplate = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.inputPassword = new System.Windows.Forms.TextBox();
@@ -62,19 +64,17 @@
 			this.label9 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.panelUser = new System.Windows.Forms.Panel();
-			this.panel3 = new System.Windows.Forms.Panel();
-			this.panel2 = new System.Windows.Forms.Panel();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.label11 = new System.Windows.Forms.Label();
 			this.panel7 = new System.Windows.Forms.Panel();
-			this.inputCountryCode = new System.Windows.Forms.TextBox();
-			this.label14 = new System.Windows.Forms.Label();
 			this.btnUnlockAccount = new System.Windows.Forms.Button();
 			this.btnChangeLogon = new System.Windows.Forms.Button();
+			this.panel3 = new System.Windows.Forms.Panel();
 			this.btnChangePassword = new System.Windows.Forms.Button();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.inputCountryCode = new System.Windows.Forms.TextBox();
+			this.label14 = new System.Windows.Forms.Label();
 			this.btnSetPhone = new System.Windows.Forms.Button();
-			this.statusUser = new System.Windows.Forms.ToolStripStatusLabel();
-			this.statusContext = new System.Windows.Forms.ToolStripStatusLabel();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.label11 = new System.Windows.Forms.Label();
 			this.statusStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -90,10 +90,10 @@
 			this.panel5.SuspendLayout();
 			this.panel4.SuspendLayout();
 			this.panelUser.SuspendLayout();
+			this.panel7.SuspendLayout();
 			this.panel3.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.panel1.SuspendLayout();
-			this.panel7.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// cfgPhoneInput
@@ -161,6 +161,18 @@
 			this.statusLabel.Name = "statusLabel";
 			this.statusLabel.Size = new System.Drawing.Size(50, 17);
 			this.statusLabel.Text = "Loading";
+			// 
+			// statusUser
+			// 
+			this.statusUser.Name = "statusUser";
+			this.statusUser.Size = new System.Drawing.Size(51, 17);
+			this.statusUser.Text = "USR ERR";
+			// 
+			// statusContext
+			// 
+			this.statusContext.Name = "statusContext";
+			this.statusContext.Size = new System.Drawing.Size(56, 17);
+			this.statusContext.Text = "CON ERR";
 			// 
 			// inputMessageTemplate
 			// 
@@ -524,54 +536,6 @@
 			this.panelUser.TabIndex = 22;
 			this.panelUser.Paint += new System.Windows.Forms.PaintEventHandler(this.panelUser_Paint);
 			// 
-			// panel3
-			// 
-			this.panel3.Controls.Add(this.inputPassword);
-			this.panel3.Controls.Add(this.label3);
-			this.panel3.Controls.Add(this.btnGenerate);
-			this.panel3.Controls.Add(this.btnChangePassword);
-			this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panel3.Location = new System.Drawing.Point(5, 73);
-			this.panel3.Name = "panel3";
-			this.panel3.Padding = new System.Windows.Forms.Padding(3);
-			this.panel3.Size = new System.Drawing.Size(414, 26);
-			this.panel3.TabIndex = 24;
-			// 
-			// panel2
-			// 
-			this.panel2.Controls.Add(this.inputPhone);
-			this.panel2.Controls.Add(this.label6);
-			this.panel2.Controls.Add(this.inputCountryCode);
-			this.panel2.Controls.Add(this.label14);
-			this.panel2.Controls.Add(this.btnSetPhone);
-			this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panel2.Location = new System.Drawing.Point(5, 47);
-			this.panel2.Name = "panel2";
-			this.panel2.Padding = new System.Windows.Forms.Padding(3);
-			this.panel2.Size = new System.Drawing.Size(414, 26);
-			this.panel2.TabIndex = 23;
-			// 
-			// panel1
-			// 
-			this.panel1.Controls.Add(this.inputUsername);
-			this.panel1.Controls.Add(this.lblUsername);
-			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panel1.Location = new System.Drawing.Point(5, 21);
-			this.panel1.Name = "panel1";
-			this.panel1.Padding = new System.Windows.Forms.Padding(3);
-			this.panel1.Size = new System.Drawing.Size(414, 26);
-			this.panel1.TabIndex = 22;
-			// 
-			// label11
-			// 
-			this.label11.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label11.Location = new System.Drawing.Point(5, 5);
-			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(414, 16);
-			this.label11.TabIndex = 28;
-			this.label11.Text = "Find user && set password";
-			// 
 			// panel7
 			// 
 			this.panel7.Controls.Add(this.btnUnlockAccount);
@@ -581,25 +545,6 @@
 			this.panel7.Name = "panel7";
 			this.panel7.Size = new System.Drawing.Size(414, 21);
 			this.panel7.TabIndex = 29;
-			// 
-			// inputCountryCode
-			// 
-			this.inputCountryCode.Dock = System.Windows.Forms.DockStyle.Left;
-			this.inputCountryCode.Location = new System.Drawing.Point(30, 3);
-			this.inputCountryCode.Name = "inputCountryCode";
-			this.inputCountryCode.Size = new System.Drawing.Size(30, 20);
-			this.inputCountryCode.TabIndex = 18;
-			this.inputCountryCode.TextChanged += new System.EventHandler(this.inputCountryCode_TextChanged);
-			// 
-			// label14
-			// 
-			this.label14.Dock = System.Windows.Forms.DockStyle.Left;
-			this.label14.Location = new System.Drawing.Point(3, 3);
-			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(27, 20);
-			this.label14.TabIndex = 19;
-			this.label14.Text = "CC";
-			this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// btnUnlockAccount
 			// 
@@ -631,6 +576,19 @@
 			this.btnChangeLogon.UseVisualStyleBackColor = true;
 			this.btnChangeLogon.Click += new System.EventHandler(this.btnChangeLogon_Click);
 			// 
+			// panel3
+			// 
+			this.panel3.Controls.Add(this.inputPassword);
+			this.panel3.Controls.Add(this.label3);
+			this.panel3.Controls.Add(this.btnGenerate);
+			this.panel3.Controls.Add(this.btnChangePassword);
+			this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panel3.Location = new System.Drawing.Point(5, 73);
+			this.panel3.Name = "panel3";
+			this.panel3.Padding = new System.Windows.Forms.Padding(3);
+			this.panel3.Size = new System.Drawing.Size(414, 26);
+			this.panel3.TabIndex = 24;
+			// 
 			// btnChangePassword
 			// 
 			this.btnChangePassword.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
@@ -649,6 +607,39 @@
 			this.btnChangePassword.UseVisualStyleBackColor = true;
 			this.btnChangePassword.Click += new System.EventHandler(this.btnChangePassword_Click);
 			// 
+			// panel2
+			// 
+			this.panel2.Controls.Add(this.inputPhone);
+			this.panel2.Controls.Add(this.label6);
+			this.panel2.Controls.Add(this.inputCountryCode);
+			this.panel2.Controls.Add(this.label14);
+			this.panel2.Controls.Add(this.btnSetPhone);
+			this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panel2.Location = new System.Drawing.Point(5, 47);
+			this.panel2.Name = "panel2";
+			this.panel2.Padding = new System.Windows.Forms.Padding(3);
+			this.panel2.Size = new System.Drawing.Size(414, 26);
+			this.panel2.TabIndex = 23;
+			// 
+			// inputCountryCode
+			// 
+			this.inputCountryCode.Dock = System.Windows.Forms.DockStyle.Left;
+			this.inputCountryCode.Location = new System.Drawing.Point(30, 3);
+			this.inputCountryCode.Name = "inputCountryCode";
+			this.inputCountryCode.Size = new System.Drawing.Size(30, 20);
+			this.inputCountryCode.TabIndex = 18;
+			this.inputCountryCode.TextChanged += new System.EventHandler(this.inputCountryCode_TextChanged);
+			// 
+			// label14
+			// 
+			this.label14.Dock = System.Windows.Forms.DockStyle.Left;
+			this.label14.Location = new System.Drawing.Point(3, 3);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(27, 20);
+			this.label14.TabIndex = 19;
+			this.label14.Text = "CC";
+			this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
 			// btnSetPhone
 			// 
 			this.btnSetPhone.Dock = System.Windows.Forms.DockStyle.Right;
@@ -665,17 +656,26 @@
 			this.btnSetPhone.UseVisualStyleBackColor = true;
 			this.btnSetPhone.Click += new System.EventHandler(this.btnSetPhone_Click);
 			// 
-			// statusUser
+			// panel1
 			// 
-			this.statusUser.Name = "statusUser";
-			this.statusUser.Size = new System.Drawing.Size(51, 17);
-			this.statusUser.Text = "USR ERR";
+			this.panel1.Controls.Add(this.inputUsername);
+			this.panel1.Controls.Add(this.lblUsername);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panel1.Location = new System.Drawing.Point(5, 21);
+			this.panel1.Name = "panel1";
+			this.panel1.Padding = new System.Windows.Forms.Padding(3);
+			this.panel1.Size = new System.Drawing.Size(414, 26);
+			this.panel1.TabIndex = 22;
 			// 
-			// statusContext
+			// label11
 			// 
-			this.statusContext.Name = "statusContext";
-			this.statusContext.Size = new System.Drawing.Size(56, 17);
-			this.statusContext.Text = "CON ERR";
+			this.label11.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label11.Location = new System.Drawing.Point(5, 5);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(414, 16);
+			this.label11.TabIndex = 28;
+			this.label11.Text = "Find user && set password";
 			// 
 			// ChangePWForm
 			// 
@@ -711,13 +711,13 @@
 			this.panel4.ResumeLayout(false);
 			this.panel4.PerformLayout();
 			this.panelUser.ResumeLayout(false);
+			this.panel7.ResumeLayout(false);
 			this.panel3.ResumeLayout(false);
 			this.panel3.PerformLayout();
 			this.panel2.ResumeLayout(false);
 			this.panel2.PerformLayout();
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
-			this.panel7.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
