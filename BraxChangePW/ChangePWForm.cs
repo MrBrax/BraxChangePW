@@ -7,6 +7,7 @@ using System.DirectoryServices.AccountManagement;
 using System.Drawing;
 using System.Linq;
 using System.Media;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -17,12 +18,17 @@ namespace BraxChangePW {
 
 	public partial class ChangePWForm : Form {
 
+        public string textLog = "";
+
 		public string sUsername;
 		public string sPassword;
 		public string sMessage;
 		public string sPhone;
+
 		public bool ValidUser = false;
 		public bool FoundUser = false;
+        public bool UserHasPhone = false;
+        public bool PasswordChanged = false;
 
 		StringBuilder userInfo = new StringBuilder();
 
@@ -30,16 +36,22 @@ namespace BraxChangePW {
 		UserPrincipal adUser;
 
 		public ChangePWForm() {
+
 			InitializeComponent();
 
-			// try connecting, show error if it doesn't work
-			try {
+            this.Text = "BraxChangePW " + Assembly.GetExecutingAssembly().GetName().Version;
+
+            // try connecting, show error if it doesn't work
+            /*
+            try {
 				adContext = new PrincipalContext(ContextType.Domain);
 			} catch (Exception ex) {
 				MessageBox.Show("AD DS Error: " + ex.Message, "Could not connect", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				statusLabel.Text = "AD DS Error: " + ex.Message;
 				this.Text += " (error)";
 			}
+            */
+            adConnect();
 
 			// fill in default values
 			inputMessageTemplate.Text = Properties.Settings.Default.MessageTemplate;
@@ -48,21 +60,75 @@ namespace BraxChangePW {
 			cfgAuthToken.Text = Properties.Settings.Default.AuthToken;
 			cfgPhoneInput.Text = Properties.Settings.Default.PhoneNumber;
 
-			statusLabel.Text = "Waiting for username";
-		}
+            // statusLabel.Text = "Waiting for username";
+            resetForm();
 
-		private bool adConnect() {
+            doLog("Ready");
+
+        }
+
+        public void doLog( string text ) {
+            string time = DateTime.Now.ToString("yyyyMMdd|HH:mm:ss");
+            textLog += "[" + time + "] " + text + Environment.NewLine;
+            logTextBox.Text = textLog;
+            logTextBox.ScrollToCaret();
+        }
+
+        public void resetForm() {
+
+            inputUsername.Text = String.Empty;
+            inputUsername.ReadOnly = false;
+
+            inputPassword.Text = String.Empty;
+            inputPassword.ReadOnly = true;
+
+            inputPhone.Text = String.Empty;
+            inputPhone.ReadOnly = true;
+
+            btnSetPhone.Enabled = false;
+            btnChangePassword.Enabled = false;
+            btnGenerate.Enabled = false;
+
+            sUsername = String.Empty;
+            sPassword = String.Empty;
+            sPhone = String.Empty;
+
+            ValidUser = false;
+            FoundUser = false;
+            UserHasPhone = false;
+            PasswordChanged = false;
+
+            inputMessageTemplate.Text = Properties.Settings.Default.MessageTemplate;
+
+            setStatus("Waiting for username");
+
+            btnSendMessage.Enabled = false;
+            btnSendMessage.Text = "Send SMS";
+
+            txtUserInfo.Text = "User info will appear here";
+
+            updateMessage();
+
+            doLog("Form reset");
+
+        }
+
+        private bool adConnect() {
 			if (adContext == null) {
 				try {
 					adContext = new PrincipalContext(ContextType.Domain);
 				} catch (Exception ex) {
-					MessageBox.Show("AD DS Error: " + ex.Message, "Could not connect", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("AD DS Error: " + ex.Message + Environment.NewLine + Environment.NewLine + "Program will run regardless.", "Could not connect", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					statusLabel.Text = "AD DS Error: " + ex.Message;
 					statusContext.Text = "CONN ERR";
-					return false;
+                    doLog("Failed connecting to AD");
+                    return false;
 				}
 				statusContext.Text = "CONN OK";
-			}
+                doLog("Connected to AD");
+            } else {
+                // doLog("Already connected to AD");
+            }
 			return true;
 		}
 
@@ -84,45 +150,62 @@ namespace BraxChangePW {
 		}
 
 		public void updateMessage() {
-			string txt = inputMessageTemplate.Text;
+
+            string txt = inputMessageTemplate.Text;
 
 			Dictionary<string, string> parameters = new Dictionary<string, string>();
-			parameters.Add("u", inputUsername.Text);
-			parameters.Add("p", inputPassword.Text);
+			parameters.Add("u", sUsername);
+			parameters.Add("p", PasswordChanged ? "<NOCHANGE>" : sPassword);
 			txt = Regex.Replace(txt, @"%([a-z])", m => parameters[m.Groups[1].Value]);
 
 			sMessage = txt;
 			lblMessagePreview.Text = txt;
 
+            // send message button
 			if(	string.IsNullOrEmpty(Properties.Settings.Default.AccountSID) ||
-				string.IsNullOrEmpty(Properties.Settings.Default.AuthToken) ||
+				
+                // twilio not configured
+                string.IsNullOrEmpty(Properties.Settings.Default.AuthToken) ||
 				string.IsNullOrEmpty(Properties.Settings.Default.PhoneNumber) ) {
 				btnSendMessage.Enabled = false;
 				btnSendMessage.Text = "Twilio not configured";
+
 			} else if ( string.IsNullOrEmpty(sUsername) || string.IsNullOrEmpty(sPassword) || string.IsNullOrEmpty(sPhone) || !ValidUser ) {
-				btnSendMessage.Enabled = false;
+
+                btnSendMessage.Enabled = false;
 				btnSendMessage.Text = "Can't send, something is missing.";
+
 			} else {
+
 				btnSendMessage.Enabled = true;
 				btnSendMessage.Text = "Send SMS to " + sPhone;
+
 			}
+
 
 			if (!ValidUser) {
 				txtUserInfo.Text = "Non-fitting user found";
-				btnChangeLogon.Enabled = false;
+				btnForceChangeLogon.Enabled = false;
 				btnUnlockAccount.Enabled = false;
 			}else {
-				btnChangeLogon.Enabled = true;
+				btnForceChangeLogon.Enabled = true;
 				btnUnlockAccount.Enabled = true;
 			}
 
-			if(!FoundUser) {
+            lblPhoneNumber.ForeColor = SystemColors.ControlText;
+
+            if (!FoundUser) {
 				btnUpdateUser.Enabled = false;
 				txtUserInfo.Text = "No user found";
 				lblUsername.ForeColor = System.Drawing.Color.Red;
 			} else {
 				btnUpdateUser.Enabled = true;
 				lblUsername.ForeColor = SystemColors.ControlText;
+
+                if (!UserHasPhone) {
+                    lblPhoneNumber.ForeColor = System.Drawing.Color.Red;
+                }
+
 			}
 
 			statusContext.Text = "CONN " + (adContext == null ? "ERR" : "OK");
@@ -163,104 +246,141 @@ namespace BraxChangePW {
 
 		}
 
+        private void setStatus( string sText) {
+            statusLabel.Text = sText;
+        }
+
+        private bool checkUser( string chkUserName ) {
+
+            updateMessage();
+
+            // garbage
+            if (adUser != null)
+                adUser.Dispose();
+
+            // don't spam the db
+            if (chkUserName == String.Empty || chkUserName.Length <= 3) {
+                setStatus("No username, or it's too short.");
+                return false;
+            }
+
+            setStatus("Querying...");
+                
+            // try to connect
+            if (!adConnect()) {
+                setStatus("AD connection error");
+                return false;
+            }
+
+            sPhone = string.Empty; // reset phone			
+
+            // find user
+            adUser = UserPrincipal.FindByIdentity(adContext, IdentityType.SamAccountName, chkUserName);
+
+            FoundUser = adUser != null;
+
+            if (FoundUser) {
+
+                setStatus( "Found user: " + adUser.Name + ", " + (!string.IsNullOrEmpty(adUser.EmailAddress) ? adUser.EmailAddress : "no email") );
+
+                if (!string.IsNullOrEmpty(adUser.VoiceTelephoneNumber)) {
+
+                    sPhone = adUser.VoiceTelephoneNumber;
+
+                    // replace first 0 with country code, if wrong format
+                    string cc = Properties.Settings.Default.CountryCode;
+                    if (cc != string.Empty && sPhone.Substring(0, 1) != "+") {
+                        sPhone = cc + sPhone.Substring(1, sPhone.Length - 2);
+                    }
+
+                    if (!string.IsNullOrEmpty(sPassword)) {
+                        btnSendMessage.Text = "Send SMS to " + sPhone;
+                    } else {
+                        btnSendMessage.Text = "No password provided";
+                    }
+
+                    inputPhone.Text = sPhone;
+                    inputPassword.ReadOnly = false;
+
+                    btnChangePassword.Enabled = true;
+                    btnGenerate.Enabled = true;
+
+                    ValidUser = true;
+
+                    UserHasPhone = true;
+
+                    doLog("User '" + chkUserName + "' OK!");
+
+                } else {
+
+                    inputPhone.Text = string.Empty;
+                    inputPassword.ReadOnly = true;
+
+                    btnChangePassword.Enabled = false;
+                    btnGenerate.Enabled = false;
+
+                    ValidUser = false;
+
+                    UserHasPhone = false;
+
+                    btnSendMessage.Text = "User has no phone number";
+
+                    doLog("User '" + chkUserName + "' has no phone number");
+
+                }
+
+                sUsername = chkUserName;
+
+                updateMessage();
+
+                refreshUser();
+
+                inputPhone.ReadOnly = false;
+                btnSetPhone.Enabled = true;
+
+                btnForceChangeLogon.Enabled = true;
+                btnUnlockAccount.Enabled = true;
+
+                if (!adUser.IsAccountLockedOut()) {
+                    btnUnlockAccount.Text = "Account unlocked";
+                } else {
+                    btnUnlockAccount.Text = "Unlock account";
+                }
+
+                return ValidUser && UserHasPhone;
+
+            } else {
+
+                inputPhone.Text = string.Empty;
+                inputPhone.ReadOnly = true;
+                inputPassword.ReadOnly = true;
+
+                btnSetPhone.Enabled = false;
+                btnChangePassword.Enabled = false;
+                btnGenerate.Enabled = false;
+                btnForceChangeLogon.Enabled = false;
+                btnUnlockAccount.Enabled = false;
+                btnUnlockAccount.Text = "Unlock account";
+                btnSendMessage.Text = "User not found";
+
+                setStatus("User not found");
+                
+                ValidUser = false;
+
+                updateMessage();
+
+                return false;
+
+            }
+
+        }
 
 		// main query + update
 		private void inputUsername_TextChanged(object sender, EventArgs e) {
-
-			sUsername = inputUsername.Text;
-
-			updateMessage();
-
-			if (adUser != null) adUser.Dispose();
-
-			// don't spam the db
-			if (sUsername == String.Empty || sUsername.Length <= 3) {
-				statusLabel.Text = "No username, or it's too short.";
-				return;
-			}
-
-			statusLabel.Text = "Querying...";
-
-			if (!adConnect()) return;
-
-			sPhone = string.Empty; // reset phone			
-
-			// find user
-			adUser = UserPrincipal.FindByIdentity(adContext, IdentityType.SamAccountName, sUsername);
-				
-			FoundUser = adUser != null;
-
-			if(FoundUser) {
-				statusLabel.Text = "Found user: " + adUser.Name + ", " + ( !string.IsNullOrEmpty(adUser.EmailAddress) ? adUser.EmailAddress : "no email" );
-				if ( !string.IsNullOrEmpty(adUser.VoiceTelephoneNumber) ) {
-
-					sPhone = adUser.VoiceTelephoneNumber;
-
-					// replace first 0 with country code, if wrong format
-					string cc = Properties.Settings.Default.CountryCode;
-					if ( cc != string.Empty && sPhone.Substring(0,1) != "+") {
-						sPhone = cc + sPhone.Substring(1, sPhone.Length - 2);
-					}
-
-					if (!string.IsNullOrEmpty(sPassword)) {
-						btnSendMessage.Text = "Send SMS to " + sPhone;
-					}else {
-						btnSendMessage.Text = "No password provided";
-					}
-
-					inputPhone.Text = sPhone;
-
-					ValidUser = true;
-
-					inputPassword.ReadOnly = false;
-					btnChangePassword.Enabled = true;
-					btnGenerate.Enabled = true;
-						
-					// chkChangeLogon.Checked = adUser.unl
-
-				} else {
-					inputPhone.Text = string.Empty;
-					inputPassword.ReadOnly = true;
-					btnChangePassword.Enabled = false;
-					btnGenerate.Enabled = false;
-					ValidUser = false;
-					btnSendMessage.Text = "User has no phone number";
-				}
-
-				updateMessage();
-
-				refreshUser();
-
-				inputPhone.ReadOnly = false;
-				btnSetPhone.Enabled = true;
-
-				btnChangeLogon.Enabled = true;
-				btnUnlockAccount.Enabled = true;
-
-				if (!adUser.IsAccountLockedOut()) {
-					btnUnlockAccount.Text = "Account unlocked";
-				}else {
-					btnUnlockAccount.Text = "Unlock account";
-				}
-
-			} else {
-				inputPhone.Text = string.Empty;
-				inputPhone.ReadOnly = true;
-				btnSetPhone.Enabled = false;
-				btnChangePassword.Enabled = false;
-				btnGenerate.Enabled = false;
-				inputPassword.ReadOnly = true;
-				btnChangeLogon.Enabled = false;
-				btnUnlockAccount.Enabled = false;
-				btnUnlockAccount.Text = "Unlock account";
-				statusLabel.Text = "User not found";
-				btnSendMessage.Text = "User not found";
-				ValidUser = false;
-				updateMessage();
-			}
-
+            bool okUser = checkUser(inputUsername.Text);
 		}
 
+        // check message template
 		private bool tooLong = false;
 		private void inputMessageTemplate_TextChanged(object sender, EventArgs e) {
 			updateMessage();
@@ -278,7 +398,8 @@ namespace BraxChangePW {
 		}
 
 		private void inputPassword_TextChanged(object sender, EventArgs e) {
-			sPassword = inputPassword.Text;
+
+            sPassword = inputPassword.Text;
 			
 			if( string.IsNullOrEmpty(sPassword) || sPassword.Length < 7 ) {
 				btnChangePassword.Enabled = false;
@@ -287,13 +408,22 @@ namespace BraxChangePW {
 			}
 
 			updateMessage();
+
 		}
 
 		// generate password, if you find a better way, please tell me :)
 		private void btnGenerate_Click(object sender, EventArgs e) {
-			sPassword = PasswordGenerator(8);
-			inputPassword.Text = sPassword;
-			updateMessage();
+
+            sPassword = PasswordGenerator(8);
+
+            PasswordChanged = false;
+
+            inputPassword.Text = sPassword;
+
+            updateMessage();
+
+            doLog("Password generated");
+
 		}
 
 		// change password in ad
@@ -301,47 +431,42 @@ namespace BraxChangePW {
 
 			if (!adConnect()) return;
 
-			if (adUser == null) adUser = UserPrincipal.FindByIdentity(adContext, IdentityType.SamAccountName, sUsername);
+            if (adUser == null) {
+                adUser = UserPrincipal.FindByIdentity(adContext, IdentityType.SamAccountName, sUsername);
+            }
 
-			try {
+            inputPassword.ReadOnly = true;
+            btnChangePassword.Enabled = false;
+            inputUsername.ReadOnly = true;
+
+            try {
 				adUser.SetPassword(sPassword);
 			} catch (Exception ex) {
-				statusLabel.Text = "Error: " + ex.Message;
-				updateMessage();
+
+                inputPassword.ReadOnly = false;
+                btnChangePassword.Enabled = true;
+
+                statusLabel.Text = "Set password error: " + ex.Message;
+                doLog("Set password error: " + ex.Message);
+                MessageBox.Show(ex.Message, "Set password error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                updateMessage();
 				return;
 			}
 
+            doLog("Password changed for '" + sUsername + "'");
+
 			adUser.Save();
 
-			statusLabel.Text = "Changed password for " + sUsername;
-			inputPassword.ReadOnly = true;
-			inputUsername.ReadOnly = true;
+			setStatus("Changed password for " + sUsername);
 
 			updateMessage();
+
 			refreshUser();
 
 		}
 
 		private void btnReset_Click(object sender, EventArgs e) {
-			inputUsername.Text = String.Empty;
-			inputPassword.Text = String.Empty;
-			inputUsername.ReadOnly = false;
-			inputPassword.ReadOnly = false;
-			inputPhone.Text = String.Empty;
-			inputPhone.ReadOnly = true;
-			btnSetPhone.Enabled = false;
-			btnChangePassword.Enabled = false;
-			btnGenerate.Enabled = false;
-			sUsername = String.Empty;
-			sPassword = String.Empty;
-			sPhone = String.Empty;
-			ValidUser = false;
-			inputMessageTemplate.Text = Properties.Settings.Default.MessageTemplate;
-			statusLabel.Text = "Waiting for username";
-			btnSendMessage.Enabled = false;
-			btnSendMessage.Text = "Send SMS";
-			txtUserInfo.Text = "User info will appear here";
-			updateMessage();
+            resetForm();
 		}
 
 		// changes db
@@ -356,17 +481,24 @@ namespace BraxChangePW {
 			try {
 				adUser.VoiceTelephoneNumber = inputPhone.Text;
 			} catch (Exception ex) {
-				statusLabel.Text = "Error: " + ex.Message;
-				updateMessage();
+				setStatus("Set phone error: " + ex.Message);
+                doLog("Set phone error: " + ex.Message);
+                MessageBox.Show(ex.Message, "Set phone error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                updateMessage();
 				return;
 			}
 
 			adUser.Save();
 
 			sPhone = inputPhone.Text;
-			statusLabel.Text = "Changed phone for " + sUsername;
-			MessageBox.Show("Changed phone for " + sUsername);
-			updateMessage();
+
+			setStatus("Changed phone for '" + sUsername + "'");
+
+			MessageBox.Show("Changed phone for '" + sUsername + "'");
+
+            doLog("Changed phone for '" + sUsername + "'");
+
+            updateMessage();
 
 			refreshUser();
 
@@ -409,6 +541,8 @@ namespace BraxChangePW {
 			if (string.IsNullOrEmpty(accountSid) || string.IsNullOrEmpty(authToken) || string.IsNullOrEmpty(phone) ) {
 				SystemSounds.Asterisk.Play();
 				MessageBox.Show("Twilio not configured", "Could not send", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                setStatus("Twilio not configured");
+                doLog("Twilio not configured");
 				return;
 			}
 
@@ -419,12 +553,14 @@ namespace BraxChangePW {
 			// error return from request
 			if(message.RestException != null) {
 				MessageBox.Show("Twilio error: " + message.RestException.Message, "Message not sent", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				statusLabel.Text = "Twilio error: " + message.RestException.Message;
+				setStatus("Twilio error: " + message.RestException.Message);
+                doLog("Twilio error: " + message.RestException.Message);
 				return;
 			}
 
-			MessageBox.Show("Message sent: " + message.Sid);
-			statusLabel.Text = "Message sent: " + message.Sid;
+			MessageBox.Show("Message sent." + Environment.NewLine + "SID: " + message.Sid);
+			setStatus("Message sent to " + sPhone + ", SID " + message.Sid);
+            doLog("Message sent to " + sPhone + ", SID " + message.Sid);
 
 		}
 
